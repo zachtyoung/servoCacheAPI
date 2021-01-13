@@ -5,6 +5,10 @@ const helpers = require("./helpers");
 const server = express();
 server.use(cors());
 server.use(express.json());
+const {
+  performance,
+  PerformanceObserver
+} = require('perf_hooks');
 server.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header(
@@ -48,8 +52,18 @@ server.get("/", (req, res) => {
     .then((response) => {
       return helpers.getPricingList(response);
     })
+    // .then((response) => {
+    //   response.map(el =>{
+    //     el.discount_rules.map(el2 =>{
+    //       el2.servo_list.map(el3 =>{
+    //         console.log(el3.id)
+    //       })
+    //     })
+    //   })
+     
+    // })
     .then((response) => {
       res.status(200).json(response);
-    });
+    })
 });
 module.exports = server;
