@@ -5,10 +5,6 @@ const helpers = require("./helpers");
 const server = express();
 server.use(cors());
 server.use(express.json());
-const {
-  performance,
-  PerformanceObserver
-} = require('perf_hooks');
 server.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header(
@@ -46,24 +42,15 @@ server.get("/", (req, res) => {
       }
     )
     .then((response) => {
-      servos = response.data;
+      servos = response.data.data;
       return customer_groups;
     })
     .then((response) => {
-      return helpers.getPricingList(response);
+      return helpers.getPricingList(response, servos);
     })
-    // .then((response) => {
-    //   response.map(el =>{
-    //     el.discount_rules.map(el2 =>{
-    //       el2.servo_list.map(el3 =>{
-    //         console.log(el3.id)
-    //       })
-    //     })
-    //   })
-     
-    // })
     .then((response) => {
-      res.status(200).json(response);
+      console.log('trying')
+      res.status(200).json(response[0]);
     })
 });
 module.exports = server;
