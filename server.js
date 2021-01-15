@@ -3,7 +3,12 @@ const axios = require("axios");
 const cors = require("cors");
 const helpers = require("./helpers");
 const server = express();
+const { createClient } = require("webdav");
 server.use(cors());
+const {
+  performance,
+  PerformanceObserver
+} = require('perf_hooks');
 server.use(express.json());
 server.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -48,9 +53,30 @@ server.get("/", (req, res) => {
     .then((response) => {
       return helpers.getPricingList(response, servos);
     })
-    .then((response) => {
-      console.log('trying')
-      res.status(200).json(response[0]);
+    .then(async (response) => {
+      const client = await createClient(
+        `https://store-yy9d3il1gg.mybigcommerce.com/dav`,
+        {
+            username: "admin@gobilda.com",
+            password: process.env.SSP_WEBDAV_PASSWORD,
+            digest:true,
+            
+        }
+    );
+
+    response.forEach(async group =>{
+   if (await client.exists(`/content/servos_page/servos_list_by_customer${group.id}.js`) === false) {
+      await client.putFileContents(`/content/servos_page/servos_list_by_customer${group.id}.js`, `let servo_list = ${JSON.stringify(group.servo_list)}`);
+  }
+    })
+    
+ 
+
+    await client.putFileContents("/content/servos_page/servos_list_by_customer.js", `let servos = ${JSON.stringify(response)}`,{ maxBodyLength: 99999999999999 })
+    res.status(200).json(response[0])
+  })
+    .catch(err =>{
+      console.log(err)
     })
 });
 module.exports = server;

@@ -1,17 +1,9 @@
 .then(async response =>{
     const client = await createClient(
-      `https://store-${
-        id == "gobilda_staging"? process.env.GOBILDA_STAGING_STORE :
-        id =="gobilda_production"?process.env.GOBILDA_STORE:
-        id =="servocity_staging"?process.env.SERVOCITY_STAGING_STORE:
-        id == "servocity_production"?process.env.SERVOCITY_STORE:''
-      }.mybigcommerce.com/dav`,
+      `https://store-yy9d3il1gg.mybigcommerce.com/dav`,
       {
           username: "admin@gobilda.com",
-          password: id == "gobilda_staging"? process.env.GOBILDA_STAGING_STORE_WEBDAV_PASSWORD :
-          id =="gobilda_production"?process.env.GOBILDA_STORE_WEBDAV_PASSWORD:
-          id =="servocity_staging"?process.env.SERVOCITY_STAGING_STORE_WEBDAV_PASSWORD:
-          id == "servocity_production"?process.env.SERVOCITY_STORE_WEBDAV_PASSWORD:'',
+          password: process.env.SSP_WEBDAV_PASSWORD,
           digest:true
       }
   );

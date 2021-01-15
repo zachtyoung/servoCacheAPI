@@ -6,7 +6,7 @@ const getPricingList = async (response, servos) => {
         const buffer = [];
         //el is one customer group with mutiple discount rules
         for (let i = 0; i < el.discount_rules.length; i++) {
-          el.discount_rules[i].servo_list = [...servos]
+          el.servo_list = [...servos]
           if (el.discount_rules[i].type == "category") {
             let next = "";
             
@@ -20,22 +20,22 @@ const getPricingList = async (response, servos) => {
                   },
                 }
               );
-              await response.data.data.map(el2 =>{
+              await response.data.data.map(async el2 =>{
                 if(el2.categories.includes(435)){
                   let percent = parseInt(el.discount_rules[i].amount)/100
                   let finalPrice = el2.price - (percent * el2.price)
                   el2.price = Math.ceil(finalPrice * 100) / 100;
 
-                        // el.discount_rules[i].servo_list.push(el2)
-                        el.discount_rules[i].servo_list.forEach((e, index)=>{
-                            if(e.id == el2.id){
-                                el.discount_rules[i].servo_list[index]=el2
-                            }
-                        })
-                        //if (vendors.some(e => e.Name === 'Magenic')) {}
-                        //filter servos against el2
-                        // if there is a match return el2
-                        //else return servo from servo list
+                  el.servo_list.forEach((elmt, index) => {
+                    if(elmt.id == el2.id){
+                      if(el2.price <elmt.price){
+                      el.servo_list[index]=el2
+                      }
+                    }
+                  })
+
+                  
+            
                 }
               })
       
