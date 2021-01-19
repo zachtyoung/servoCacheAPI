@@ -1,22 +1,22 @@
 const axios = require("axios");
-const getPricingList = async (response, servos) => {
+const getPricingList = async (response, servos, storeID) => {
     let newBuffer = [];
     for (let i = 0; i < response.length; i++) {
       let el = response[i]
         const buffer = [];
         //el is one customer group with mutiple discount rules
         for (let i = 0; i < el.discount_rules.length; i++) {
-          el.servo_list = [...servos]
+          // el.servo_list = [...servos]
           if (el.discount_rules[i].type == "category") {
             let next = "";
             
             do {
               let response = await axios.get(
-                `https://api.bigcommerce.com/stores/yy9d3il1gg/v3/catalog/products?categories:in=${el.discount_rules[i].category_id}&include_fields=categories,name,price&limit=250${next}`,
+                `https://api.bigcommerce.com/stores/${storeID}/v3/catalog/products?categories:in=${el.discount_rules[i].category_id}&include_fields=categories,name,price&limit=250${next}`,
                 {
                   headers: {
-                    "X-Auth-Client": `${process.env.SSP_CLIENT}`,
-                    "X-Auth-Token": `${process.env.SSP_TOKEN}`,
+                    "X-Auth-Client": `${process.env.SSP_CLIENT_P}`,
+                    "X-Auth-Token": `${process.env.SSP_TOKEN_P}`,
                   },
                 }
               );
