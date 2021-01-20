@@ -1,4 +1,5 @@
 const axios = require("axios");
+var round10 = require('round10').round10;
 const getPricingList = async (response, servos, storeID) => {
     let newBuffer = [];
     for (let i = 0; i < response.length; i++) {
@@ -21,15 +22,16 @@ const getPricingList = async (response, servos, storeID) => {
                 }
               );
               await response.data.data.map(async el2 =>{
-                if(el2.categories.includes(435)){
+                if(el2.categories.includes(422)){
                   let percent = parseInt(el.discount_rules[i].amount)/100
                   let finalPrice = el2.price - (percent * el2.price)
-                  el2.price = Math.ceil(finalPrice * 100) / 100;
+                  let S_price = Math.round(finalPrice * 100) / 100
 
-                  el.servo_list.forEach((elmt, index) => {
+                  await el.servo_list.forEach((elmt, index) => {
                     if(elmt.id == el2.id){
-                      if(el2.price <elmt.price){
-                      el.servo_list[index]=el2
+                      if(S_price <elmt.price){
+                        console.log("fired")
+                      el.servo_list[index].price=S_price
                       }
                     }
                   })

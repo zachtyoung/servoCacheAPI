@@ -27,6 +27,7 @@ server.get("/", (req, res) => {
   let servoCatID = '422'
   let customer_groups;
   let servos;
+  let requriedFields = ['filter_rotation','filter_torque','filter_speed','filter_voltage','filter_weight','filter_spline','filter_motor_type','filter_gear_material','filter_brand','filter_circuit', 'filter_size' ]
   axios
     .get(`${base}${storeID}/v2/customer_groups`, {
       headers: {
@@ -38,7 +39,7 @@ server.get("/", (req, res) => {
       customer_groups = response.data;
       axios
     .get(
-      `${base}${storeID}/v3/catalog/products?categories:in=${servoCatID}&limit=250&page=1&include=custom_fields,images&include_fields=name,price,sku,availability`,
+      `${base}${storeID}/v3/catalog/products?categories:in=${servoCatID}&limit=250&page=1&include=custom_fields,images&include_fields=name,price,sku,availability,custom_url`,
       {
         headers: {
           "X-Auth-Client": `${process.env.SSP_CLIENT_P}`,
@@ -51,11 +52,19 @@ server.get("/", (req, res) => {
      await servos.forEach(servo =>{
         servo.images.forEach(image =>{
           if(image.is_thumbnail = true){
-            servo.images = image 
+            servo.images = image.url_thumbnail
           }
         })
+        let neededFields = new Object();
+        servo.custom_fields.forEach(field =>{
+          if(requriedFields.includes(field.name)){
+   
+            neededFields[field.name] = field.value
+          }
+        })
+        servo.custom_fields = neededFields
       })
-      let temp = await customer_groups.map(el =>{
+     await customer_groups.map(el =>{
         el.servo_list = [...servos]
       })
       return customer_groups
@@ -83,7 +92,7 @@ server.get("/", (req, res) => {
           await client.putFileContents(`/content/servos_page/servos_list_by_customer${group.id}.js`, `let servo_list = ${JSON.stringify(group.servo_list)}`);
   }
     })
-    res.status(200).json(response[7])
+    res.status(200).json(response[11])
  console.log('Done')
   })
     })
